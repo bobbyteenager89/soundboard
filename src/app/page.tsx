@@ -4,7 +4,6 @@ import { useState, useRef } from 'react';
 
 // Sound management
 let currentAudio: HTMLAudioElement | null = null;
-let currentlyPlayingFile: string | null = null;
 
 // Team configurations
 const TEAMS = {
@@ -112,7 +111,6 @@ export default function Home() {
               isCurrentlyPlaying={playingSound === sound.file}
               onPlayStateChange={(isPlaying) => {
                 setPlayingSound(isPlaying ? sound.file : null);
-                currentlyPlayingFile = isPlaying ? sound.file : null;
               }}
               className={sound.team ? `bg-gradient-to-b ${currentTeam.primaryColor}` : undefined}
             />
