@@ -1,9 +1,22 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 // Sound management
 let currentAudio: HTMLAudioElement | null = null;
+
+// Function to get album art URL from audio element
+const getAlbumArt = (audio: HTMLAudioElement): string | null => {
+  if (audio && audio.mozGetAsFile) {
+    const mediaElement = audio as any;
+    if (mediaElement.metadata && mediaElement.metadata.picture && mediaElement.metadata.picture.length > 0) {
+      const picture = mediaElement.metadata.picture[0];
+      const blob = new Blob([picture.data], { type: picture.format });
+      return URL.createObjectURL(blob);
+    }
+  }
+  return null;
+};
 
 // Team configurations
 const TEAMS = {
@@ -42,13 +55,63 @@ const ALL_SOUNDS = [
   { file: "touchdown-Green Bay Packers (Bang on the Drum).mp3", label: "PACKERS TD", team: "packers" },
   { file: "touchdown-Chicago Bears.mp3", label: "BEARS TD", team: "bears" },
   { file: "touchdown-Buffalo Bills.mp3", label: "BILLS TD", team: "bills" },
-  { file: "touchdown-Kansas City Chiefs.mp3", label: "CHIEFS TD", team: "chiefs" }
+  { file: "touchdown-Kansas City Chiefs.mp3", label: "CHIEFS TD", team: "chiefs" },
+  { file: "chiefs-fight-song.mp3", label: "CHIEFS FIGHT SONG", team: "chiefs", hasAlbumArt: true },
+  { file: "chiefs-touchdown-kansas-city.mp3", label: "CHIEFS TOUCHDOWN KANSAS CITY", team: "chiefs", hasAlbumArt: true },
+  { file: "chiefs-tomahawk-chop.mp3", label: "CHIEFS TOMAHAWK CHOP", team: "chiefs", hasAlbumArt: true },
+  { file: "chiefs-war-chant.mp3", label: "CHIEFS WAR CHANT", team: "chiefs", hasAlbumArt: true }
 ];
 
 export default function Home() {
-  const [selectedTeam, setSelectedTeam] = useState<keyof typeof TEAMS>('default');
+  // Get initial team from URL hash or default
+  const getInitialTeam = () => {
+    if (typeof window === 'undefined') return 'default';
+    const hash = window.location.hash.slice(1);
+    return (hash in TEAMS) ? hash as keyof typeof TEAMS : 'default';
+  };
+
+  const [selectedTeam, setSelectedTeam] = useState<keyof typeof TEAMS>(getInitialTeam);
   const [playingSound, setPlayingSound] = useState<string | null>(null);
   const currentTeam = TEAMS[selectedTeam];
+
+  // Update URL hash when team changes
+  useEffect(() => {
+    if (selectedTeam === 'default') {
+      window.location.hash = '';
+    } else {
+      window.location.hash = selectedTeam;
+    }
+  }, [selectedTeam]);
+
+  // Handle hash change from browser navigation
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1);
+      if (hash in TEAMS) {
+        setSelectedTeam(hash as keyof typeof TEAMS);
+        // Stop any playing sound
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+          setPlayingSound(null);
+        }
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Handle team selection
+  const handleTeamChange = (team: keyof typeof TEAMS) => {
+    setSelectedTeam(team);
+    // Stop any playing sound
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      setPlayingSound(null);
+    }
+  };
 
   // Filter sounds based on team selection
   const teamSounds = ALL_SOUNDS.filter(sound => sound.team === selectedTeam);
@@ -79,7 +142,7 @@ export default function Home() {
           {/* Team Selector */}
           <select
             value={selectedTeam}
-            onChange={(e) => setSelectedTeam(e.target.value as keyof typeof TEAMS)}
+            onChange={(e) => handleTeamChange(e.target.value as keyof typeof TEAMS)}
             className="
               mt-2
               px-4 
@@ -136,6 +199,22 @@ function SoundButton({
   className?: string;
 }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [albumArtUrl, setAlbumArtUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!audioRef.current) {
+      const audio = new Audio(`/sounds/${file}`);
+      audioRef.current = audio;
+
+      // Try to get album art once audio metadata is loaded
+      audio.addEventListener('loadedmetadata', () => {
+        const artUrl = getAlbumArt(audio);
+        if (artUrl) {
+          setAlbumArtUrl(artUrl);
+        }
+      });
+    }
+  }, [file]);
 
   // Split label into words for potential line breaks
   const words = label.split(' ');
@@ -189,7 +268,7 @@ function SoundButton({
         font-bold 
         border-4 
         border-gray-600 
-        ${className}
+        ${albumArtUrl ? '' : className}
         ${isCurrentlyPlaying ? 'border-yellow-400 scale-95' : ''}
         rounded-lg 
         shadow-lg
@@ -199,13 +278,23 @@ function SoundButton({
         flex
         items-center
         justify-center
+        relative
+        overflow-hidden
       `}
+      style={albumArtUrl ? {
+        backgroundImage: `url(${albumArtUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      } : undefined}
     >
+      {albumArtUrl && <div className="absolute inset-0 bg-black/40" />}
       <span className={`
         text-center 
         ${textSize}
         leading-tight
         whitespace-pre-line
+        relative
+        z-10
       `}>
         {displayText}
       </span>
