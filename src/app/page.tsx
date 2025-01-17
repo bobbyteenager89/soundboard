@@ -7,8 +7,17 @@ let currentAudio: HTMLAudioElement | null = null;
 
 // Function to get album art URL from audio element
 const getAlbumArt = (audio: HTMLAudioElement): string | null => {
-  const mediaElement = audio as any;
-  if (mediaElement.metadata && mediaElement.metadata.picture && mediaElement.metadata.picture.length > 0) {
+  // We need to access non-standard properties, so we type it as unknown first
+  const mediaElement = audio as unknown as {
+    metadata?: {
+      picture?: Array<{
+        data: Uint8Array;
+        format: string;
+      }>;
+    };
+  };
+  
+  if (mediaElement.metadata?.picture?.length) {
     const picture = mediaElement.metadata.picture[0];
     const blob = new Blob([picture.data], { type: picture.format });
     return URL.createObjectURL(blob);
