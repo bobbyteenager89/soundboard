@@ -7,13 +7,11 @@ let currentAudio: HTMLAudioElement | null = null;
 
 // Function to get album art URL from audio element
 const getAlbumArt = (audio: HTMLAudioElement): string | null => {
-  if (audio && audio.mozGetAsFile) {
-    const mediaElement = audio as any;
-    if (mediaElement.metadata && mediaElement.metadata.picture && mediaElement.metadata.picture.length > 0) {
-      const picture = mediaElement.metadata.picture[0];
-      const blob = new Blob([picture.data], { type: picture.format });
-      return URL.createObjectURL(blob);
-    }
+  const mediaElement = audio as any;
+  if (mediaElement.metadata && mediaElement.metadata.picture && mediaElement.metadata.picture.length > 0) {
+    const picture = mediaElement.metadata.picture[0];
+    const blob = new Blob([picture.data], { type: picture.format });
+    return URL.createObjectURL(blob);
   }
   return null;
 };
@@ -56,10 +54,10 @@ const ALL_SOUNDS = [
   { file: "touchdown-Chicago Bears.mp3", label: "BEARS TD", team: "bears" },
   { file: "touchdown-Buffalo Bills.mp3", label: "BILLS TD", team: "bills" },
   { file: "touchdown-Kansas City Chiefs.mp3", label: "CHIEFS TD", team: "chiefs" },
-  { file: "chiefs-fight-song.mp3", label: "CHIEFS FIGHT SONG", team: "chiefs", hasAlbumArt: true },
-  { file: "chiefs-touchdown-kansas-city.mp3", label: "CHIEFS TOUCHDOWN KANSAS CITY", team: "chiefs", hasAlbumArt: true },
-  { file: "chiefs-tomahawk-chop.mp3", label: "CHIEFS TOMAHAWK CHOP", team: "chiefs", hasAlbumArt: true },
-  { file: "chiefs-war-chant.mp3", label: "CHIEFS WAR CHANT", team: "chiefs", hasAlbumArt: true }
+  { file: "chiefs-fight-for-your-right.mp3", label: "CHIEFS FIGHT FOR YOUR RIGHT", team: "chiefs", hasAlbumArt: true },
+  { file: "chiefs-red-kingdom.mp3", label: "CHIEFS RED KINGDOM", team: "chiefs", hasAlbumArt: true },
+  { file: "chiefs-rock-and-roll.mp4", label: "CHIEFS ROCK AND ROLL", team: "chiefs", hasAlbumArt: true },
+  { file: "chiefs-swag-surfin.mp3", label: "CHIEFS SWAG SURFIN", team: "chiefs", hasAlbumArt: true }
 ];
 
 export default function Home() {
