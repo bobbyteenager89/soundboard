@@ -142,7 +142,7 @@ export default function Home() {
       <div className="relative z-10">
         {/* Header */}
         <header className="mb-4 text-center">
-          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-red-500 to-yellow-400 p-2">
+          <h1 className="title">
             FOOTBALL GUY SOUNDBOARD
           </h1>
           
@@ -150,18 +150,7 @@ export default function Home() {
           <select
             value={selectedTeam}
             onChange={(e) => handleTeamChange(e.target.value as keyof typeof TEAMS)}
-            className="
-              mt-2
-              px-4 
-              py-2 
-              rounded-lg 
-              bg-gray-800 
-              text-white 
-              border-2 
-              border-gray-600
-              focus:outline-none 
-              focus:border-yellow-400
-            "
+            className="team-selector"
           >
             {Object.entries(TEAMS).map(([key, team]) => (
               <option key={key} value={key}>
@@ -269,24 +258,9 @@ function SoundButton({
     <button
       onClick={handleClick}
       className={`
-        aspect-square
-        p-1.5
-        text-white 
-        font-bold 
-        border-4 
-        border-gray-600 
-        ${albumArtUrl ? '' : className}
-        ${isCurrentlyPlaying ? 'border-yellow-400 scale-95' : ''}
-        rounded-lg 
-        shadow-lg
-        transition-all
-        hover:scale-105
-        active:scale-95
-        flex
-        items-center
-        justify-center
-        relative
-        overflow-hidden
+        sound-button
+        ${className}
+        ${isCurrentlyPlaying ? 'playing' : ''}
       `}
       style={albumArtUrl ? {
         backgroundImage: `url(${albumArtUrl})`,
