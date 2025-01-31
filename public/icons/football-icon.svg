@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" rx="128" fill="#000033"/>
+  
+  <!-- Football -->
+  <g transform="translate(256 256) rotate(-45)">
+    <ellipse cx="0" cy="0" rx="160" ry="100" fill="#8B4513"/>
+    <path d="M-150 -10 L150 -10 M-150 10 L150 10" stroke="white" stroke-width="8"/>
+    <path d="M0 -90 L0 90" stroke="white" stroke-width="8"/>
+  </g>
+  
+  <!-- Shine effect -->
+  <circle cx="180" cy="180" r="20" fill="white" opacity="0.3"/>
+</svg> 
