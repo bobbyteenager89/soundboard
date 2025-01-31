@@ -29,23 +29,23 @@ const getAlbumArt = (audio: HTMLAudioElement): string | null => {
 const TEAMS = {
   default: {
     name: "Default (No Team)",
-    primaryColor: "from-blue-700 to-blue-900",
+    primaryColor: { start: "#1e40af", end: "#1e3a8a" },
   },
   packers: {
     name: "Green Bay Packers",
-    primaryColor: "from-green-700 to-yellow-600",
+    primaryColor: { start: "#15803d", end: "#ca8a04" },
   },
   bears: {
     name: "Chicago Bears",
-    primaryColor: "from-blue-800 to-orange-600",
+    primaryColor: { start: "#1e40af", end: "#ea580c" },
   },
   bills: {
     name: "Buffalo Bills",
-    primaryColor: "from-blue-700 to-red-600",
+    primaryColor: { start: "#1e40af", end: "#dc2626" },
   },
   chiefs: {
     name: "Kansas City Chiefs",
-    primaryColor: "from-red-700 to-yellow-600",
+    primaryColor: { start: "#dc2626", end: "#ca8a04" },
   }
 };
 
@@ -126,22 +126,26 @@ export default function Home() {
   const sounds = [...teamSounds, ...otherSounds];
 
   return (
-    <div 
-      className="min-h-screen bg-[#000033] p-2 relative"
-      style={{
-        backgroundImage: 'url(/images/AmFBfield.svg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      }}
-    >
-      {/* Overlay for better contrast */}
-      <div className="absolute inset-0 bg-black/50" />
+    <div style={{
+      minHeight: '100vh',
+      padding: '8px',
+      position: 'relative',
+      backgroundImage: 'url(/images/AmFBfield.svg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+    }}>
+      {/* Overlay */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      }} />
 
       {/* Content */}
-      <div className="relative z-10">
+      <div style={{ position: 'relative', zIndex: 1 }}>
         {/* Header */}
-        <header className="mb-4 text-center">
+        <header style={{ marginBottom: '16px', textAlign: 'center' }}>
           <h1 className="title">
             FOOTBALL GUY SOUNDBOARD
           </h1>
@@ -161,7 +165,13 @@ export default function Home() {
         </header>
 
         {/* Soundboard Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-w-4xl mx-auto">
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '8px',
+          maxWidth: '896px',
+          margin: '0 auto',
+        }}>
           {sounds.map((sound) => (
             <SoundButton 
               key={sound.file} 
@@ -171,7 +181,9 @@ export default function Home() {
               onPlayStateChange={(isPlaying) => {
                 setPlayingSound(isPlaying ? sound.file : null);
               }}
-              className={sound.team ? `bg-gradient-to-b ${currentTeam.primaryColor}` : undefined}
+              style={sound.team ? {
+                background: `linear-gradient(to bottom, ${currentTeam.primaryColor.start}, ${currentTeam.primaryColor.end})`
+              } : undefined}
             />
           ))}
         </div>
@@ -180,19 +192,19 @@ export default function Home() {
   );
 }
 
-// Sound Button Component
+// Update SoundButton component
 function SoundButton({ 
   file, 
   label,
   isCurrentlyPlaying,
   onPlayStateChange,
-  className = "bg-gradient-to-b from-blue-700 to-blue-900 hover:from-blue-600 hover:to-blue-800 active:from-blue-800 active:to-blue-950"
+  style
 }: { 
   file: string; 
   label: string;
   isCurrentlyPlaying: boolean;
   onPlayStateChange: (isPlaying: boolean) => void;
-  className?: string;
+  style?: React.CSSProperties;
 }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [albumArtUrl, setAlbumArtUrl] = useState<string | null>(null);
@@ -257,26 +269,31 @@ function SoundButton({
   return (
     <button
       onClick={handleClick}
-      className={`
-        sound-button
-        ${className}
-        ${isCurrentlyPlaying ? 'playing' : ''}
-      `}
-      style={albumArtUrl ? {
-        backgroundImage: `url(${albumArtUrl})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
-      } : undefined}
+      className={`sound-button ${isCurrentlyPlaying ? 'playing' : ''}`}
+      style={{
+        ...style,
+        ...(albumArtUrl ? {
+          backgroundImage: `url(${albumArtUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        } : {})
+      }}
     >
-      {albumArtUrl && <div className="absolute inset-0 bg-black/40" />}
-      <span className={`
-        text-center 
-        ${textSize}
-        leading-tight
-        whitespace-pre-line
-        relative
-        z-10
-      `}>
+      {albumArtUrl && <div style={{
+        position: 'absolute',
+        inset: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.4)'
+      }} />}
+      <span style={{
+        textAlign: 'center',
+        fontSize: label.length > 30 ? '10px' : 
+                 label.length > 20 ? '12px' : 
+                 label.length > 15 ? '14px' : '16px',
+        lineHeight: '1.2',
+        whiteSpace: 'pre-line',
+        position: 'relative',
+        zIndex: 1
+      }}>
         {displayText}
       </span>
     </button>
