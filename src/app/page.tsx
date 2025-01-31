@@ -166,6 +166,7 @@ export default function Home() {
               style={sound.team ? {
                 background: `linear-gradient(to bottom, ${currentTeam.primaryColor.start}, ${currentTeam.primaryColor.end})`
               } : undefined}
+              isTeamSound={!!sound.team}
             />
           ))}
         </div>
@@ -180,13 +181,15 @@ function SoundButton({
   label,
   isCurrentlyPlaying,
   onPlayStateChange,
-  style
+  style,
+  isTeamSound = false
 }: { 
   file: string; 
   label: string;
   isCurrentlyPlaying: boolean;
   onPlayStateChange: (isPlaying: boolean) => void;
   style?: React.CSSProperties;
+  isTeamSound?: boolean;
 }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [albumArtUrl, setAlbumArtUrl] = useState<string | null>(null);
@@ -202,6 +205,11 @@ function SoundButton({
         if (artUrl) {
           setAlbumArtUrl(artUrl);
         }
+      });
+
+      // Add ended event listener
+      audio.addEventListener('ended', () => {
+        onPlayStateChange(false);
       });
     }
   }, [file]);
@@ -234,9 +242,15 @@ function SoundButton({
     }
 
     if (isCurrentlyPlaying) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      onPlayStateChange(false);
+      // For team sounds, pause and keep current time
+      if (isTeamSound) {
+        audioRef.current.pause();
+        onPlayStateChange(false);
+      } else {
+        // For default sounds, restart from beginning
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(console.error);
+      }
     } else {
       if (currentAudio) {
         currentAudio.pause();
