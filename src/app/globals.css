@@ -11,6 +11,52 @@ body {
   min-height: 100vh;
 }
 
+.container {
+  min-height: 100vh;
+  padding: 8px;
+  position: relative;
+  background-image: url('/images/AmFBfield.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+}
+
+.header {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  max-width: 896px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 .sound-button {
   width: 100%;
   aspect-ratio: 1;
@@ -41,6 +87,20 @@ body {
 .sound-button.playing {
   border-color: #facc15;
   transform: scale(0.95);
+}
+
+.album-art-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.button-text {
+  text-align: center;
+  line-height: 1.2;
+  white-space: pre-line;
+  position: relative;
+  z-index: 1;
 }
 
 .team-selector {

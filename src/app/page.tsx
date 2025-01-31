@@ -126,26 +126,14 @@ export default function Home() {
   const sounds = [...teamSounds, ...otherSounds];
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      padding: '8px',
-      position: 'relative',
-      backgroundImage: 'url(/images/AmFBfield.svg)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-    }}>
+    <div className="container">
       {/* Overlay */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      }} />
+      <div className="overlay" />
 
       {/* Content */}
-      <div style={{ position: 'relative', zIndex: 1 }}>
+      <div className="content">
         {/* Header */}
-        <header style={{ marginBottom: '16px', textAlign: 'center' }}>
+        <header className="header">
           <h1 className="title">
             FOOTBALL GUY SOUNDBOARD
           </h1>
@@ -165,13 +153,7 @@ export default function Home() {
         </header>
 
         {/* Soundboard Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '8px',
-          maxWidth: '896px',
-          margin: '0 auto',
-        }}>
+        <div className="grid">
           {sounds.map((sound) => (
             <SoundButton 
               key={sound.file} 
@@ -279,20 +261,11 @@ function SoundButton({
         } : {})
       }}
     >
-      {albumArtUrl && <div style={{
-        position: 'absolute',
-        inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.4)'
-      }} />}
-      <span style={{
-        textAlign: 'center',
+      {albumArtUrl && <div className="album-art-overlay" />}
+      <span className="button-text" style={{
         fontSize: label.length > 30 ? '10px' : 
                  label.length > 20 ? '12px' : 
-                 label.length > 15 ? '14px' : '16px',
-        lineHeight: '1.2',
-        whiteSpace: 'pre-line',
-        position: 'relative',
-        zIndex: 1
+                 label.length > 15 ? '14px' : '16px'
       }}>
         {displayText}
       </span>
